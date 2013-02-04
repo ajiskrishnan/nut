@@ -2,7 +2,7 @@
 
 #include "main.h"
 #include "serial.h"
-
+#include<stdlib.h>
 #define DRIVER_NAME	"PACE NUT driver"
 #define DRIVER_VERSION	"1.06"
 
@@ -22,10 +22,33 @@ upsdrv_info_t upsdrv_info = {
 #define SER_WAIT_USEC	0
 #define TRUE 1
 #define FALSE 0
-
+#define BAUDRATE B115200
+#define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
 char buf[63];
 
 char *command = "AD00";
+
+struct PaceFields {
+
+const char *name;
+int len;
+int divident;
+
+} pacefield[] = 
+{
+	{"input.voltage",4,10},
+	{"output.voltage",4,10},
+	{"output.current",4,100},
+	{"battery.voltage",4,10},
+	{"battery.current",4,100},
+	{"panel.voltage",4,10},
+	{"panel.current",4,100},
+	{"input.frequency",4,10},
+	{"output.frequency",4,10},
+	{"ups.load",4,10},
+	{"panel.kw",4,10},
+	{"panel.kwh",8,100}
+};
 enum status_position
 		    {
 		      ERR_STATUS              = 56,
@@ -70,22 +93,20 @@ void upsdrv_shutdown(void)
 void test_EOL()
 {
   char ch;
-  int y,test = 1;
-  while(test){
+  	
+  while(TRUE){
 	do
 	{
 	
-	    y = ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
+	    ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
 	
 	}
 	while(ch!='\n');
-	y = ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
-	if(ch != '\r')
-	    test =1;
-	else
-	  test =0;
+	ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
+	if(ch == '\r')
+	   return;
   }	
-	  return;
+	 
 }
 int test_CMD()
 { 
@@ -102,15 +123,6 @@ int test_CMD()
 	return FALSE;
 }
 
-void fill_buffer()
-{
-	int x;
-	test_EOL();
-	
-    	x= ser_get_buf_len(upsfd,buf, 64, SER_WAIT_SEC,SER_WAIT_USEC);
-	printf("reading status is %d\n",x);
-	printf("the reading data is %s\n",buf);
-}
 
 void update_err_status()
 {
@@ -184,18 +196,10 @@ void update_battery_charge_dchrg_status()
 void upsdrv_updateinfo(void)
 {
 	int r;
-	int x,y,i=0,j,k,value;
+	int x,i=0,j,k,value;
 	float value1;
-	
-	char *test = "1234";
-	char *ptr[]= {"input.voltage","output.voltage","output.current","battery.voltage","battery.current",
-			      "pannel.voltage","pannel.current","input.frequency","output.frequency",
-			      "ups.load","pannel.kw","pannel.kwh"
-			     };
 	char ch;
 	char data[10];
-	int index[] = {4,4,4,4,4,4,4,4,4,4,4,8};
-	int divident [] = {10,10,100,10,100,10,100,10,10,10,10,100};
 	int data_position = 4;
 	
 	test_EOL();
@@ -211,10 +215,10 @@ void upsdrv_updateinfo(void)
 	  return;
 	}
 	i = data_position;
-	for(j =0;j<12;j++)
+	for(j =0;j< _countof(pacefield);j++)
 	{
 	   
-		 for(k=0;k<index[j];k++)
+		 for(k=0;k<pacefield[j].len;k++)
 		 {
 			data[k] = buf[i+k];
 			
@@ -223,11 +227,10 @@ void upsdrv_updateinfo(void)
 		 data[k] = '\0';
 		 printf("the reading data is %s\n",data);
 		 value = atoi(data);
-		 printf("the interger value %d\n",value);
-		 value1 = (float)value/divident[j];
+		 value1 = (float)value/pacefield[j].divident;
 		 printf("value 1 = %f\n",value1);
-		 dstate_setinfo(ptr[j], "%0.2f",value1);
-		 i = i+index[j];
+		 dstate_setinfo(pacefield[j].name, "%0.2f",value1);
+		 i = i+pacefield[j].len;
 	    
 	}
 	status_init();
@@ -249,10 +252,10 @@ void upsdrv_help(void)
 
 void upsdrv_makevartable(void)
 {
-	addvar(VAR_VALUE, "pannel.voltage", "Override nominal battery voltage");
-	addvar(VAR_VALUE, "pannel.current", "Battery voltage multiplier");
-	addvar(VAR_VALUE, "pannel.kw", "Override nominal battery voltage");
-	addvar(VAR_VALUE, "pannel.kwh", "Battery voltage multiplier");
+	addvar(VAR_VALUE, "panel.voltage", "Override nominal battery voltage");
+	addvar(VAR_VALUE, "panel.current", "Battery voltage multiplier");
+	addvar(VAR_VALUE, "panel.kw", "Override nominal battery voltage");
+	addvar(VAR_VALUE, "panel.kwh", "Battery voltage multiplier");
 	addvar(VAR_VALUE, "inverter.status", "Battery voltage multiplier");
 	addvar(VAR_VALUE, "charge.solar", "Battery voltage multiplier");
 	addvar(VAR_VALUE, "error.status", "Battery voltage multiplier");
@@ -261,17 +264,16 @@ void upsdrv_makevartable(void)
 void upsdrv_initups(void)
 {
 	int fdm, fds;
-	char *slavename;                       //only for ptmx
-	extern char *ptsname();                //only for ptmx
+//	char *slavename;                       //only for ptmx
+//	extern char *ptsname();                //only for ptmx
      
 	upsfd = ser_open(device_path);
 	grantpt(upsfd);                        /* change permission of slave , only for ptmx*/
 	unlockpt(upsfd);                       /* unlock slave ,only for ptmx */
-	slavename = ptsname(upsfd);           //only for ptmx
-	printf("the slave name is %s\n",slavename);
-	//upsfd = ser_open(device_path);
+//	slavename = ptsname(upsfd);           //only for ptmx
+//	printf("the slave name is %s\n",slavename);
 	printf("driver initups is running");
-	ser_set_speed(upsfd, device_path, B38400);
+	ser_set_speed(upsfd, device_path, BAUDRATE);
 }
 
 void upsdrv_cleanup(void)
