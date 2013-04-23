@@ -34,7 +34,7 @@ if WITH_IPMI
 endif
 
 SERIAL_DRIVERLIST = bcmxcp belkin belkinunv bestfcom	\
- bestfortress bestuferrups bestups dummy-ups etapro everups 	\
+ bestfortress bestuferrups bestups pace enertech dummy-ups etapro everups 	\
  gamatronic genericups isbmex liebert liebert-esp2 masterguard metasys	\
  oldmge-shut mge-utalk microdowell mge-shut oneac optiups powercom rhino 	\
  safenet skel solis tripplite tripplitesu upscode2 victronups powerpanel \
@@ -105,6 +105,8 @@ belkinunv_SOURCES = belkinunv.c
 bestfcom_SOURCES = bestfcom.c
 bestuferrups_SOURCES = bestuferrups.c
 bestups_SOURCES = bestups.c
+pace_SOURCES = pace.c
+enertech_SOURCES = enertech.c
 blazer_ser_SOURCES = blazer.c blazer_ser.c
 blazer_ser_LDADD = $(LDADD) -lm
 etapro_SOURCES = etapro.c
