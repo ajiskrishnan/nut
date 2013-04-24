@@ -109,7 +109,7 @@ void test_command()
   while(TRUE){
 	
 	ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
-//	printf("data is %c\n",ch);
+	printf("data is %c\n",ch);
 	if(ch == '#')
 	   return;
   }	
