@@ -22,7 +22,7 @@ upsdrv_info_t upsdrv_info = {
 #define SER_WAIT_USEC	0
 #define TRUE 1
 #define FALSE 0
-#define BAUDRATE B9600
+#define BAUDRATE B38400
 #define DATA_LENGTH 69
 #define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
 char buf[69];
