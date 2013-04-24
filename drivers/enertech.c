@@ -19,13 +19,13 @@ upsdrv_info_t upsdrv_info = {
 #define UPSDELAY 50000	/* 50 ms delay required for reliable operation */
 
 #define SER_WAIT_SEC	3	/* allow 3.0 sec for ser_get calls */
-#define SER_WAIT_USEC	2000
+#define SER_WAIT_USEC	0
 #define TRUE 1
 #define FALSE 0
-#define BAUDRATE B38400
+#define BAUDRATE B9600
 #define DATA_LENGTH 69
 #define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
-char buf[69];
+char buf[69]="#12345678934246999857648787626636362888237372783877473728747747778818";
 
 char *command = "AD00";
 
@@ -109,7 +109,7 @@ void test_command()
   while(TRUE){
 	
 	ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
-	printf("data is %c\n",ch);
+//	printf("data is %c\n",ch);
 	if(ch == '#')
 	   return;
   }	
@@ -209,9 +209,9 @@ void upsdrv_updateinfo(void)
 	char data[10];
 	int data_position = 0;
 	
-	test_command();
+	//test_command();
 	
-    	x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
+    	//x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
 	printf("reading status is %d\n",x);
 	printf("the reading data is %s\n",buf);
 
