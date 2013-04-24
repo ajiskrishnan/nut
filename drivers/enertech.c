@@ -19,7 +19,7 @@ upsdrv_info_t upsdrv_info = {
 #define UPSDELAY 50000	/* 50 ms delay required for reliable operation */
 
 #define SER_WAIT_SEC	3	/* allow 3.0 sec for ser_get calls */
-#define SER_WAIT_USEC	0
+#define SER_WAIT_USEC	2000
 #define TRUE 1
 #define FALSE 0
 #define BAUDRATE B38400
