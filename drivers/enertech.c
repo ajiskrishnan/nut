@@ -25,7 +25,7 @@ upsdrv_info_t upsdrv_info = {
 #define BAUDRATE B9600
 #define DATA_LENGTH 69
 #define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
-char buf[69]="#12345678934246999857648787626636362888237372783877473728747747778818";
+char buf[69];
 
 char *command = "AD00";
 
@@ -209,9 +209,9 @@ void upsdrv_updateinfo(void)
 	char data[10];
 	int data_position = 0;
 	
-	//test_command();
+	test_command();
 	
-    	//x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
+    	x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
 	printf("reading status is %d\n",x);
 	printf("the reading data is %s\n",buf);
 
