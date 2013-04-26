@@ -23,10 +23,10 @@ upsdrv_info_t upsdrv_info = {
 #define TRUE 1
 #define FALSE 0
 #define BAUDRATE B9600
-#define DATA_LENGTH 69
+#define DATA_LENGTH 70
 #define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
-//char buf[69];
-char buf[69]="#12345678934246999857648787626636362888237372783877473728747747778818"; 
+//char buf[71];
+char buf[70]="2300000000000000000550000000000000000000001234567890000008077001001266"; 
 char *command = "AD00";
 
 struct PaceFields {
@@ -37,28 +37,28 @@ int len;
 
 } pacefield[] = 
 {
-	{"output.L1.voltage",3},
+	{"output.voltage",3},                     //output L1 voltage
 	{"output.L2.voltage",3},
 	{"output.L3.voltage",3},
 	{"output.L1.current",3},
 	{"output.L2.current",3},
 	{"output.L3.current",3},
+	{"battery.voltage",3},
+	{"battery.current",3},
 	{"input.voltage",3},
-	{"input.current",3},
-	{"input.L1.voltage",3},
 	{"input.L2.voltage",3},
 	{"input.L3.voltage",3},
 	{"input.frequency",3},
 	{"output.frequency",3},
-	{"inv.flag1",2},
+	{"inv.flag1",3},                          //in data sheet they mentioned length is 2.
 	{"inv.serial",9},
 	{"battery.charge",3},
 	{"inv.flag2",2},
 	{"inv.flag3",2},
 	{"solar.voltage",3},
 	{"solar.current",3},
-	{"solar.power",3},
-	{"solar.kwh",3}
+	{"input.power",3},
+	{"output.power",3}
 
 };
 enum status_position
@@ -257,8 +257,8 @@ void upsdrv_makevartable(void)
 {
 	addvar(VAR_VALUE, "solar.voltage", "solar voltage");
 	addvar(VAR_VALUE, "solar.current", "solar current");
-	addvar(VAR_VALUE, "solar.power", "solar power");
-	addvar(VAR_VALUE, "solar.kwh", "solar KWH");	
+//	addvar(VAR_VALUE, "solar.power", "solar power");
+//	addvar(VAR_VALUE, "solar.kwh", "solar KWH");	
 	addvar(VAR_VALUE, "inv.flag1", "inverter flag1");
 	addvar(VAR_VALUE, "inv.flag2", "inverter flag2");
 	addvar(VAR_VALUE, "inv.flag3", "inverter flag3");
