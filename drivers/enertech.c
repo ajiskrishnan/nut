@@ -25,8 +25,8 @@ upsdrv_info_t upsdrv_info = {
 #define BAUDRATE B9600
 #define DATA_LENGTH 70
 #define _countof(_Array) (sizeof(_Array)/(sizeof(_Array[0])))
-//char buf[71];
-char buf[70]="2300000000000000000550000000000000000000001234567890000008077001001266"; 
+char buf[71];
+//char buf[70]="2300000000000000000550000000000000000000001234567890000008077001001266"; 
 char *command = "AD00";
 
 struct PaceFields {
@@ -104,14 +104,19 @@ void upsdrv_shutdown(void)
 }
 void test_command()
 {
+  int x;
   char ch;
   	
   while(TRUE){
 	
 	ser_get_char(upsfd,&ch, SER_WAIT_SEC,SER_WAIT_USEC);
 //	printf("data is %c\n",ch);
-	if(ch == '#')
-	   return;
+	if(ch == '#'){
+		x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
+		printf("reading status is %d\n",x);
+		printf("the reading data is %s\n",buf);
+		return;
+	}
   }	
 	 
 }
@@ -209,11 +214,11 @@ void upsdrv_updateinfo(void)
 	char data[10];
 	int data_position = 0;
 	
-//	test_command();
+	test_command();
 	
 //    	x= ser_get_buf_len(upsfd,buf, DATA_LENGTH, SER_WAIT_SEC,SER_WAIT_USEC);
-	printf("reading status is %d\n",x);
-	printf("the reading data is %s\n",buf);
+//	printf("reading status is %d\n",x);
+//	printf("the reading data is %s\n",buf);
 
 	ser_comm_good();
 	
